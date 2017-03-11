@@ -6,7 +6,6 @@ pipeline {
     HELM_URL = 'https://storage.googleapis.com/kubernetes-helm'
     HELM_TARBALL = 'helm-v2.2.0-linux-amd64.tar.gz'
     CHART = 'stable/drupal'
-    POD = 'drupal'
 
     // For setting GitHub deploy status.
     CONTEXT = 'scottrigby/jenkins-helm-github-pr-envs'
