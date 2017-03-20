@@ -3,6 +3,7 @@ pipeline {
 
   environment {
     // For building Helm client.
+    // @todo Write a simple Helm Jenkins plugin?
     HELM_URL = 'https://storage.googleapis.com/kubernetes-helm'
     HELM_TARBALL = 'helm-v2.2.0-linux-amd64.tar.gz'
     CHART = 'stable/drupal'
@@ -12,12 +13,9 @@ pipeline {
     // Note you also need to set the following Kubernetes Pod Template EnvVars
     // in Manage Jenkins > Configure System:
     // - GITHUB_AUTH_TOKEN
-    // You can also test locally on minikube by setting faux values for these
-    // EnvVars, which are otherwise set by the GitHub Pull Request Builder
-    // Plugin: https://wiki.jenkins-ci.org/display/JENKINS/GitHub+pull+request+builder+plugin
-    // - ghprbActualCommit
-    // - ghprbPullId
-    // - ghprbGhRepository
+    // @todo Get auth token from Jenkins credentials somehow. Or maybe it's
+    //   better to write a custom GitHub deploy status plugin, if one really can
+    //   not be found.
   }
 
   stages {
@@ -31,8 +29,8 @@ pipeline {
           PATH=/home/jenkins/linux-amd64/:$PATH
           helm init --client-only
 
-          if helm status pr-env-$ghprbPullId > /dev/null 2>&1; then
-            helm delete --purge pr-env-$ghprbPullId
+          if helm status pr-env-$GITHUB_PR_NUMBER > /dev/null 2>&1; then
+            helm delete --purge pr-env-$GITHUB_PR_NUMBER
             echo 'Deleted PR env.'
           else
             echo 'No PR env to delete.'
@@ -53,10 +51,12 @@ pipeline {
 
           # Minikube requires persistence to be disabled.
           # @todo Parameterize persistence for local vs non-local.
-          helm install --name pr-env-$ghprbPullId $CHART --set Persistence.Enabled=false
+          helm install --name pr-env-$GITHUB_PR_NUMBER $CHART --set Persistence.Enabled=false
 
           # Create GitHub API status.
-          URL="https://api.github.com/repos/$ghprbGhRepository/deployments"
+          # Sadly, this variable is not set by the plugin.
+          GITHUB_SOURCE_REPO_NAME="$(echo $GITHUB_PR_URL | awk -F/ '{print $5}')"
+          URL="https://api.github.com/repos/$GITHUB_PR_SOURCE_REPO_OWNER/$GITHUB_SOURCE_REPO_NAME/deployments"
           HEADER="Authorization: token $GITHUB_AUTH_TOKEN"
 
           # Write JSON to file because variable expansion in JSON in
@@ -64,7 +64,7 @@ pipeline {
           # using @.
           cat << EOF > DATA.txt
 {
-  "ref": "$ghprbActualCommit",
+  "ref": "$GITHUB_PR_HEAD_SHA",
   "environment": "PR env",
   "auto_merge": false,
   "context": "$CONTEXT"
@@ -100,13 +100,15 @@ EOF
           # Update the GitHub deploy status accordingly.
           HEADER="Authorization: token $GITHUB_AUTH_TOKEN"
           DEPLOY_ID=$(cat DEPLOY_ID.txt)
-          URL="https://api.github.com/repos/$ghprbGhRepository/deployments/$DEPLOY_ID/statuses"
-          if helm list --deployed --short pr-env-$ghprbPullId > /dev/null 2>&1; then
+          # Sadly, this variable is not set by the plugin.
+          GITHUB_SOURCE_REPO_NAME="$(echo $GITHUB_PR_URL | awk -F/ '{print $5}')"
+          URL="https://api.github.com/repos/$GITHUB_PR_SOURCE_REPO_OWNER/$GITHUB_SOURCE_REPO_NAME/deployments/$DEPLOY_ID/statuses"
+          if helm list --deployed --short pr-env-$GITHUB_PR_NUMBER > /dev/null 2>&1; then
             cat << EOF > DATA.txt
 {
   "state": "success",
   "description": "PR deployment succeeded",
-  "target_url": "https://$ghprbPullId.jenkins-helm-github-pr-envs.com"
+  "target_url": "https://$GITHUB_PR_NUMBER.jenkins-helm-github-pr-envs.com"
 }
 EOF
             curl $URL -H "$HEADER" -d @DATA.txt
