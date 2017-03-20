@@ -51,7 +51,8 @@ pipeline {
 
           # Minikube requires persistence to be disabled.
           # @todo Parameterize persistence for local vs non-local.
-          helm install --name pr-env-$GITHUB_PR_NUMBER $CHART --set Persistence.Enabled=false
+          helm install --name pr-env-$GITHUB_PR_NUMBER $CHART \
+            --set persistence.enabled=false,mariadb.persistence.enabled=false
 
           # Create GitHub API status.
           # Sadly, this variable is not set by the plugin.
