@@ -29,9 +29,11 @@ Configuration
       locally).
     - For `Trigger Events` add `Pull Request Opened`, and `Commit changed`.
     - For more help see the [plugin docs](https://github.com/KostyaSha/github-integration-plugin/blob/master/docs/Configuration.adoc#pull-requests-trigger).
-1. Under `Pipeline > Definition` select `Pipeline script from SCM` and point to
-   this repo (or your fork, etc).
-    - For help with this see [Jenkins doc page](https://jenkins.io/pipeline/getting-started-pipelines/#loading-pipeline-scripts-from-scm)
+1. Under `Pipeline > Definition` select `Pipeline script from SCM`.
+    - For `SCM` select `Git`.
+    - For `Repositories > Repository URL` point to this repo (or your fork, etc).
+    - You will need to add Credentials here again. I use `SSH Username with private key` (note you can not use `secret text` here).
+    - For more help see [Jenkins doc page](https://jenkins.io/pipeline/getting-started-pipelines/#loading-pipeline-scripts-from-scm)
 
 Usage
 -----
@@ -111,7 +113,7 @@ Demo chart install details
     ```sh
     open "$(minikube dashboard --url)/#/secret/default/$DEMO_NAME-jenkins"
     ```
-1. See `Configuration` and `Usage` sections above.
+1. Finish `Installation`, `Configuration` and `Usage` sections above.
 1. After demo, cleanup:
 
     ```sh
