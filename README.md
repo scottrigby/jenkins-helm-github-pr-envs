@@ -21,6 +21,11 @@ Configuration
     - Under `Jenkins > Manage Jenkins > Configure System > GitHub`, Add a GitHub
       server. For credentials I use `secret text`, but there are several options.
       If you want to use GitHub webhooks, also check the `Manage hooks` box.
+1. Under `Jenkins > Manage Jenkins > Configure System > Images > Kubernetes Pod Template > EnvVars`,
+   click `Add Environment Variable`
+    - Set `Key` to `GITHUB_AUTH_TOKEN`, and `Value` to a GitHub Auth Token (can
+      be the same token as `secret text` above).
+    - In future this extra step should be unnecessary.
 1. Create a new Pipeline job
 1. Under `General > GitHub project > Project url` add your GitHub project URL.
 1. Under `Build Triggers` check `GitHub Pull Requests`.
@@ -32,13 +37,15 @@ Configuration
 1. Under `Pipeline > Definition` select `Pipeline script from SCM`.
     - For `SCM` select `Git`.
     - For `Repositories > Repository URL` point to this repo (or your fork, etc).
-    - You will need to add Credentials here again. I use `SSH Username with private key` (note you can not use `secret text` here).
+    - You will need to add Credentials here again. I use `SSH Username with
+      private key` (note you can not use `secret text` here).
     - For more help see [Jenkins doc page](https://jenkins.io/pipeline/getting-started-pipelines/#loading-pipeline-scripts-from-scm)
 
 Usage
 -----
 1. Create a PR in your GitHub project:
-    - A Helm PR environment should be created, and the GitHub PR should be notified.
+    - A Helm PR environment should be created, and the GitHub PR should be
+      notified.
 1. Push changes to the PR branch:
     - The PR env should rebuild, and notify GitHub PR.
 1. Close the PR:
