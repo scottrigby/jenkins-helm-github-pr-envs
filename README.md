@@ -24,7 +24,8 @@ Configuration
 1. Under `Jenkins > Manage Jenkins > Configure System > Images > Kubernetes Pod Template > EnvVars`,
    click `Add Environment Variable`
     - Set `Key` to `GITHUB_AUTH_TOKEN`, and `Value` to a GitHub Auth Token (can
-      be the same token as `secret text` above).
+      be the same token as `secret text` above if the token's user has admin
+      access to the repo).
     - In future this extra step should be unnecessary.
 1. Create a new Pipeline job
 1. Under `General > GitHub project > Project url` add your GitHub project URL.
