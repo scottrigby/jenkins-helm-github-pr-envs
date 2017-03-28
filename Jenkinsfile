@@ -42,6 +42,10 @@ pipeline {
     stage('Build PR env') {
       agent any
 
+      when {
+        expression { env.GITHUB_PR_STATE == 'OPEN' }
+      }
+
       steps {
         sh '''
           curl -O $HELM_URL/$HELM_TARBALL
