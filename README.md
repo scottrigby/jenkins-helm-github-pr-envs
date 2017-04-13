@@ -125,5 +125,5 @@ Demo chart install details
     # Delete the chart from the Minikube cluster.
     helm delete $DEMO_NAME --purge
     # Remove the hostname we added to your hosts file.
-    IP=$(minikube ip) && sudo sed -ie "\|^$IP $HOSTNAME\$|d" /etc/hosts
+    sudo sed -ie "\|$HOSTNAME\$|d" /etc/hosts
     ```
