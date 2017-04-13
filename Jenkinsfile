@@ -55,10 +55,8 @@ pipeline {
 
           # Minikube requires persistence to be disabled.
           # @todo Parameterize persistence for local vs non-local.
-          # @todo Set Ingress once https://github.com/kubernetes/charts/pull/813
-          #   is merged.
           helm install --name pr-env-$GITHUB_PR_NUMBER $CHART \
-            #--set ingress.enabled=true,ingress.hostname=$GITHUB_PR_NUMBER.jenkins-helm-github-pr-envs.com \
+            --set ingress.enabled=true,ingress.hostname=$GITHUB_PR_NUMBER.jenkins-helm-github-pr-envs.com \
             --set persistence.enabled=false,mariadb.persistence.enabled=false
 
           # Create GitHub API status.
