@@ -54,10 +54,8 @@ pipeline {
           helm init --client-only
 
           # Minikube requires persistence to be disabled.
-          # @todo Parameterize persistence for local vs non-local.
           helm install --name pr-env-$GITHUB_PR_NUMBER $CHART \
-            --set ingress.enabled=true,ingress.hostname=$GITHUB_PR_NUMBER.jenkins-helm-github-pr-envs.com \
-            --set persistence.enabled=false,mariadb.persistence.enabled=false
+            --set ingress.enabled=true,ingress.hostname=$GITHUB_PR_NUMBER.jenkins-helm-github-pr-envs.com
 
           # Create GitHub API status.
           # Sadly, this variable is not set by the plugin.

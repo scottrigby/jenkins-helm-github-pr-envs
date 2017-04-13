@@ -94,9 +94,6 @@ Demo chart install details
       # add-on we enabled in the last step.
       --set Ingress.Annotations.kubernetes.io/ingress.class=nginx \
       --set Master.HostName=$HOSTNAME \
-      # Disable chart persistence because Minikube has issues with this (it's
-      # fine on GCE and AWS).
-      --set Persistence.Enabled=false \
       # As of Today stable/jenkins is not on the latest LTS. Until then we can
       # override the chart image values to use mine. Once this issue is merged
       # you can drop this last setting: https://github.com/kubernetes/charts/pull/733
