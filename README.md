@@ -1,6 +1,10 @@
 Jenkins Helm GitHub PR envs
 ===========================
 
+Why?
+----
+Because it's awesome!
+
 A Jenkins pipeline DSL that creates GitHub PR environments using Kubernetes and
  Helm, but is otherwise dependency-free.
 
