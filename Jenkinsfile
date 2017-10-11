@@ -62,7 +62,7 @@ pipeline {
 
           # Install the chart.
           helm install --name pr-env-$GITHUB_PR_NUMBER $CHART \
-            --set ingress.enabled=true,ingress.hostname=$GITHUB_PR_NUMBER.jenkins-helm-github-pr-envs.com
+            --set ingress.enabled=true,ingress.hostname="$TARGET_URL"
 
           # Create GitHub API status.
           # Sadly, this variable is not set by the plugin.
