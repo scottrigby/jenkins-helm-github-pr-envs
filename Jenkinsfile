@@ -12,6 +12,9 @@ pipeline {
     CONTEXT = 'scottrigby/jenkins-helm-github-pr-envs'
     // Note you also need to set the following Kubernetes Pod Template EnvVars
     // in Manage Jenkins > Configure System:
+    // - PR_URL_PATTERN: The PR environment Ingress domain. You will probably
+    //   want to add the GITHUB_PR_NUMBER variable somewhere in the domain,
+    //   which will be substituted with the dynamic $GITHUB_PR_NUMBER.
     // - GITHUB_AUTH_TOKEN
     // @todo Get auth token from Jenkins credentials somehow. Or maybe it's
     //   better to write a custom GitHub deploy status plugin, if one really can
@@ -53,9 +56,13 @@ pipeline {
           PATH=/home/jenkins/linux-amd64/:$PATH
           helm init --client-only
 
-          # Minikube requires persistence to be disabled.
+          # Set PR URL.
+          PR_URL_PATTERN=${PR_URL_PATTERN:-https://GITHUB_PR_NUMBER.jenkins-helm-github-pr-envs.com}
+          TARGET_URL=${PR_URL_PATTERN/GITHUB_PR_NUMBER/$GITHUB_PR_NUMBER}
+
+          # Install the chart.
           helm install --name pr-env-$GITHUB_PR_NUMBER $CHART \
-            --set ingress.enabled=true,ingress.hostname=$GITHUB_PR_NUMBER.jenkins-helm-github-pr-envs.com
+            --set ingress.enabled=true,ingress.hostname="$TARGET_URL"
 
           # Create GitHub API status.
           # Sadly, this variable is not set by the plugin.
@@ -108,11 +115,13 @@ EOF
           GITHUB_SOURCE_REPO_NAME="$(echo $GITHUB_PR_URL | awk -F/ '{print $5}')"
           URL="https://api.github.com/repos/$GITHUB_PR_SOURCE_REPO_OWNER/$GITHUB_SOURCE_REPO_NAME/deployments/$DEPLOY_ID/statuses"
           if helm list --deployed --short pr-env-$GITHUB_PR_NUMBER > /dev/null 2>&1; then
+            PR_URL_PATTERN=${PR_URL_PATTERN:-https://GITHUB_PR_NUMBER.jenkins-helm-github-pr-envs.com}
+            TARGET_URL=${PR_URL_PATTERN/GITHUB_PR_NUMBER/$GITHUB_PR_NUMBER}
             cat << EOF > DATA.txt
 {
   "state": "success",
   "description": "PR deployment succeeded",
-  "target_url": "https://$GITHUB_PR_NUMBER.jenkins-helm-github-pr-envs.com"
+  "target_url": "$TARGET_URL"
 }
 EOF
             curl $URL -H "$HEADER" -d @DATA.txt

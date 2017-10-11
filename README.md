@@ -21,12 +21,19 @@ Configuration
     - Under `Jenkins > Manage Jenkins > Configure System > GitHub`, Add a GitHub
       server. For credentials I use `secret text`, but there are several options.
       If you want to use GitHub webhooks, also check the `Manage hooks` box.
-1. Under `Jenkins > Manage Jenkins > Configure System > Images > Kubernetes Pod Template > EnvVars`,
-   click `Add Environment Variable`
-    - Set `Key` to `GITHUB_AUTH_TOKEN`, and `Value` to a GitHub Auth Token (can
-      be the same token as `secret text` above if the token's user has admin
-      access to the repo).
-    - In future this extra step should be unnecessary.
+1. Under `Jenkins > Manage Jenkins > Configure System > Images > Kubernetes Pod Template > EnvVars`:
+    - `GITHUB_AUTH_TOKEN`:
+      - Click `Add Environment Variable`
+      - Set `Key` to `GITHUB_AUTH_TOKEN`, and `Value` to a GitHub Auth Token (can
+        be the same token as `secret text` above if the token's user has admin
+        access to the repo).
+      - In future this extra step should be unnecessary.
+    - `PR_URL_PATTERN`:
+      - click `Add Environment Variable`
+      - Set `Key` to `PR_URL_PATTERN`, and `Value` to a URL pattern you wish to
+        use for your PR environments, including a GITHUB_PR_NUMBER variable. For
+        example, if your desired PR URL is pr-7.mydomain.io, you will set the
+        value to `pr-GITHUB_PR_NUMBER.mydomain.io`.
 1. Create a new Pipeline job
 1. Under `General > GitHub project > Project url` add your GitHub project URL.
 1. Under `Build Triggers` check `GitHub Pull Requests`.
