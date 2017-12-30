@@ -25,8 +25,8 @@ pipeline {
       steps {
         sh '''
           curl -O $HELM_URL/$HELM_TARBALL
-          tar xzfv $HELM_TARBALL -C /home/jenkins && rm $HELM_TARBALL
-          PATH=/home/jenkins/linux-amd64/:$PATH
+          tar xzfv $HELM_TARBALL -C ${JENKINS_HOME} && rm $HELM_TARBALL
+          PATH=${JENKINS_HOME}/linux-amd64/:$PATH
           helm init --client-only
 
           if helm status pr-env-$GITHUB_PR_NUMBER > /dev/null 2>&1; then
@@ -49,8 +49,8 @@ pipeline {
       steps {
         sh '''
           curl -O $HELM_URL/$HELM_TARBALL
-          tar xzfv $HELM_TARBALL -C /home/jenkins && rm $HELM_TARBALL
-          PATH=/home/jenkins/linux-amd64/:$PATH
+          tar xzfv $HELM_TARBALL -C ${JENKINS_HOME} && rm $HELM_TARBALL
+          PATH=${JENKINS_HOME}/linux-amd64/:$PATH
           helm init --client-only
 
           # Minikube requires persistence to be disabled.
@@ -97,8 +97,8 @@ EOF
           DEPLOY_ID=$(cat DEPLOY_ID.txt)
 
           curl -O $HELM_URL/$HELM_TARBALL
-          tar xzfv $HELM_TARBALL -C /home/jenkins && rm $HELM_TARBALL
-          PATH=/home/jenkins/linux-amd64/:$PATH
+          tar xzfv $HELM_TARBALL -C ${JENKINS_HOME} && rm $HELM_TARBALL
+          PATH=${JENKINS_HOME}/linux-amd64/:$PATH
           helm init --client-only
 
           # Update the GitHub deploy status accordingly.
